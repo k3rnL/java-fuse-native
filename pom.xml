@@ -19,18 +19,7 @@
             <groupId>org.graalvm.nativeimage</groupId>
             <artifactId>svm</artifactId>
             <version>23.1.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.hadoop</groupId>
-            <artifactId>hadoop-hdfs-client</artifactId>
-            <version>3.3.4</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.apache.hadoop/hadoop-common -->
-        <dependency>
-            <groupId>org.apache.hadoop</groupId>
-            <artifactId>hadoop-common</artifactId>
-            <version>3.3.4</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
@@ -55,72 +44,72 @@
                                     <mainClass>com.k3rnl.fuse.FuseNative</mainClass>
                                 </transformer>
                             </transformers>
-                            <filters>
-                                <!-- Exclude org.graalvm.nativeimage:svm from the shaded JAR -->
-                                <filter>
-                                    <artifact>org.graalvm.nativeimage:svm</artifact>
-                                    <excludes>
-                                        <exclude>**/*</exclude>
-                                        <exclude>META-INF/**</exclude>
-                                    </excludes>
-                                </filter>
-                                <filter>
-                                    <artifact>org.graalvm.compiler:compiler</artifact>
-                                    <excludes>
-                                        <exclude>**/*</exclude>
-                                        <exclude>META-INF/**</exclude>
-                                    </excludes>
-                                </filter>
-                                <filter>
-                                    <artifact>org.graalvm.nativeimage:native-image-base</artifact>
-                                    <excludes>
-                                        <exclude>**/*</exclude>
-                                        <exclude>META-INF/**</exclude>
-                                    </excludes>
-                                </filter>
-                                <filter>
-                                    <artifact>org.graalvm.nativeimage:objectfile</artifact>
-                                    <excludes>
-                                        <exclude>**/*</exclude>
-                                        <exclude>META-INF/**</exclude>
-                                    </excludes>
-                                </filter>
-                                <filter>
-                                    <artifact>org.graalvm.nativeimage:pointsto</artifact>
-                                    <excludes>
-                                        <exclude>**/*</exclude>
-                                        <exclude>META-INF/**</exclude>
-                                    </excludes>
-                                </filter>
-                                <filter>
-                                    <artifact>org.graalvm.sdk:collections</artifact>
-                                    <excludes>
-                                        <exclude>**/*</exclude>
-                                        <exclude>META-INF/**</exclude>
-                                    </excludes>
-                                </filter>
-                                <filter>
-                                    <artifact>org.graalvm.sdk:nativeimage</artifact>
-                                    <excludes>
-                                        <exclude>**/*</exclude>
-                                        <exclude>META-INF/**</exclude>
-                                    </excludes>
-                                </filter>
-                                <filter>
-                                    <artifact>org.graalvm.sdk:word</artifact>
-                                    <excludes>
-                                        <exclude>**/*</exclude>
-                                        <exclude>META-INF/**</exclude>
-                                    </excludes>
-                                </filter>
-                                <filter>
-                                    <artifact>org.graalvm.truffle:truffle-compiler</artifact>
-                                    <excludes>
-                                        <exclude>**/*</exclude>
-                                        <exclude>META-INF/**</exclude>
-                                    </excludes>
-                                </filter>
-                            </filters>
+<!--                            <filters>-->
+<!--                                &lt;!&ndash; Exclude org.graalvm.nativeimage:svm from the shaded JAR &ndash;&gt;-->
+<!--                                <filter>-->
+<!--                                    <artifact>org.graalvm.nativeimage:svm</artifact>-->
+<!--                                    <excludes>-->
+<!--                                        <exclude>**/*</exclude>-->
+<!--                                        <exclude>META-INF/**</exclude>-->
+<!--                                    </excludes>-->
+<!--                                </filter>-->
+<!--                                <filter>-->
+<!--                                    <artifact>org.graalvm.compiler:compiler</artifact>-->
+<!--                                    <excludes>-->
+<!--                                        <exclude>**/*</exclude>-->
+<!--                                        <exclude>META-INF/**</exclude>-->
+<!--                                    </excludes>-->
+<!--                                </filter>-->
+<!--                                <filter>-->
+<!--                                    <artifact>org.graalvm.nativeimage:native-image-base</artifact>-->
+<!--                                    <excludes>-->
+<!--                                        <exclude>**/*</exclude>-->
+<!--                                        <exclude>META-INF/**</exclude>-->
+<!--                                    </excludes>-->
+<!--                                </filter>-->
+<!--                                <filter>-->
+<!--                                    <artifact>org.graalvm.nativeimage:objectfile</artifact>-->
+<!--                                    <excludes>-->
+<!--                                        <exclude>**/*</exclude>-->
+<!--                                        <exclude>META-INF/**</exclude>-->
+<!--                                    </excludes>-->
+<!--                                </filter>-->
+<!--                                <filter>-->
+<!--                                    <artifact>org.graalvm.nativeimage:pointsto</artifact>-->
+<!--                                    <excludes>-->
+<!--                                        <exclude>**/*</exclude>-->
+<!--                                        <exclude>META-INF/**</exclude>-->
+<!--                                    </excludes>-->
+<!--                                </filter>-->
+<!--                                <filter>-->
+<!--                                    <artifact>org.graalvm.sdk:collections</artifact>-->
+<!--                                    <excludes>-->
+<!--                                        <exclude>**/*</exclude>-->
+<!--                                        <exclude>META-INF/**</exclude>-->
+<!--                                    </excludes>-->
+<!--                                </filter>-->
+<!--                                <filter>-->
+<!--                                    <artifact>org.graalvm.sdk:nativeimage</artifact>-->
+<!--                                    <excludes>-->
+<!--                                        <exclude>**/*</exclude>-->
+<!--                                        <exclude>META-INF/**</exclude>-->
+<!--                                    </excludes>-->
+<!--                                </filter>-->
+<!--                                <filter>-->
+<!--                                    <artifact>org.graalvm.sdk:word</artifact>-->
+<!--                                    <excludes>-->
+<!--                                        <exclude>**/*</exclude>-->
+<!--                                        <exclude>META-INF/**</exclude>-->
+<!--                                    </excludes>-->
+<!--                                </filter>-->
+<!--                                <filter>-->
+<!--                                    <artifact>org.graalvm.truffle:truffle-compiler</artifact>-->
+<!--                                    <excludes>-->
+<!--                                        <exclude>**/*</exclude>-->
+<!--                                        <exclude>META-INF/**</exclude>-->
+<!--                                    </excludes>-->
+<!--                                </filter>-->
+<!--                            </filters>-->
                         </configuration>
                     </execution>
                 </executions>

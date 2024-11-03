@@ -23,11 +23,7 @@ public class FuseNative {
         this.fuseOps = fuseOps;
     }
 
-    public static void main(String[] args) throws IOException {
-        new FuseNative(new HdfsFuseOperations()).run(args);
-    }
-
-    public void run(String[] args) throws IOException {
+    public void run(String mountingPoint, boolean debug, List<String> fuseArgs) throws IOException {
         FuseOperations nativeOps = StackValue.get(FuseOperations.class);
 
         LibC.memset(LibC.autoCast(nativeOps), 0, SizeOf.get(FuseOperations.class));
@@ -69,13 +65,12 @@ public class FuseNative {
         if (fuseOps.isImplemented("write_buf")) nativeOps.writeBuf(write_buf.getFunctionPointer());
         if (fuseOps.isImplemented("write")) nativeOps.write(write.getFunctionPointer());
 
-        List<String> fuseArgs = new ArrayList<>();
-        fuseArgs.add("programName");
-        fuseArgs.add("-d");
-        fuseArgs.add("-o");
-        fuseArgs.add("allow_other");
-        fuseArgs.add("-f");
-        fuseArgs.add("/tmp/hdfs");
+        List<String> allFuseArgs = new ArrayList<>();
+        allFuseArgs.add("programName");
+        allFuseArgs.addAll(fuseArgs);
+        if (debug) allFuseArgs.add("-d");
+        allFuseArgs.add("-f");
+        allFuseArgs.add(mountingPoint);
 
         ObjectHandle objectHandle = ObjectHandles.getGlobal().create(fuseOps);
         var isolate = CurrentIsolate.getIsolate();
@@ -85,7 +80,7 @@ public class FuseNative {
         privateData.isolate(LibC.autoCast(isolate));
 
 
-        FuseLibrary.fuseMain(fuseArgs, nativeOps, LibC.autoCast(privateData));
+        FuseLibrary.fuseMain(allFuseArgs, nativeOps, LibC.autoCast(privateData));
 
         System.out.println("fuseMain Ended");
 
