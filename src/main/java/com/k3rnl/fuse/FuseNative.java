@@ -23,7 +23,7 @@ public class FuseNative {
         this.fuseOps = fuseOps;
     }
 
-    public void run(String mountingPoint, boolean debug, List<String> fuseArgs) throws IOException {
+    public void run(String mountingPoint, boolean debug, List<String> fuseArgs) {
         FuseOperations nativeOps = StackValue.get(FuseOperations.class);
 
         LibC.memset(LibC.autoCast(nativeOps), 0, SizeOf.get(FuseOperations.class));
