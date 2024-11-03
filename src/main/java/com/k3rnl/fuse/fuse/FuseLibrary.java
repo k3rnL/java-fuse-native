@@ -11,7 +11,6 @@ import org.graalvm.nativeimage.c.type.VoidPointer;
 import java.util.List;
 
 @CContext(FuseLibrary.Directives.class)
-@CLibrary("fuse3")
 public class FuseLibrary {
 
     @CFunction(value = "fuse_main_real")
