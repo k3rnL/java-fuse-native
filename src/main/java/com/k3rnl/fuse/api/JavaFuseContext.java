@@ -1,6 +1,5 @@
 package com.k3rnl.fuse.api;
 
-import org.apache.hadoop.fs.FileSystem;
 import org.graalvm.nativeimage.Isolate;
 
 public class JavaFuseContext {
