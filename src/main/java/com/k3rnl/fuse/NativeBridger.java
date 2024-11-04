@@ -215,7 +215,7 @@ public class NativeBridger {
         // lambda not supported
         FillDir fillDir = new FillDir() {
             @Override
-            public int apply(VoidPointer buf, String name, VoidPointer stat, long offset) {
+            public int apply(VoidPointer buf, String name, FileStat stat, long offset) {
                 try (var cString = CTypeConversion.toCString(name)) {
                     return filter.invoke(buf, cString.get(), stat, offset);
                 }
