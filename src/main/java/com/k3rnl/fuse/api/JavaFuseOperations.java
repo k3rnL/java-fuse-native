@@ -4,6 +4,7 @@ import com.k3rnl.fuse.NotImplemented;
 import com.k3rnl.fuse.fuse.FuseBufVec;
 import com.k3rnl.fuse.fuse.FuseConfig;
 import com.k3rnl.fuse.fuse.FuseFileInfo;
+import com.k3rnl.fuse.fuse.FuseReaddirFlags;
 import com.k3rnl.fuse.libc.StatVFS;
 import com.k3rnl.fuse.libc.FileStat;
 import com.k3rnl.fuse.libc.Flock;
@@ -409,7 +410,7 @@ public class JavaFuseOperations {
      * '1'.
      */
     @NotImplemented
-    public int readdir(String path, VoidPointer buf, FillDir filler, long offset, FuseFileInfo fi) {
+    public int readdir(String path, VoidPointer buf, FillDir filler, long offset, FuseFileInfo fi, FuseReaddirFlags flags) {
         return -1;
     }
 

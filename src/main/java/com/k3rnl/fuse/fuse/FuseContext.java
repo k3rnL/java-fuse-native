@@ -13,4 +13,15 @@ public interface FuseContext extends PointerBase {
     @CField
     VoidPointer private_data();
 
+    @CField
+    int umask(); // Umask of the calling process
+
+    @CField
+    int pid(); // PID of the calling thread
+
+    @CField
+    int uid(); // UID of the calling process
+
+    @CField
+    int gid(); // GID of the calling process
 }

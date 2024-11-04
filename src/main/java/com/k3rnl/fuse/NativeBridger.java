@@ -210,24 +210,19 @@ public class NativeBridger {
     @CEntryPoint(name = "java_fuse_native_readdir")
     @CEntryPointOptions(prologue = AgentIsolate.FuseContextPrologue.class,
             epilogue = AgentIsolate.DetachEpilogue.class)
-    public static int readdir(CCharPointer pathPointer, VoidPointer buf, FillDirFunction filter, long offset, FuseFileInfo fi) {
+    public static int readdir(CCharPointer pathPointer, VoidPointer buf, FillDirFunction filler, long offset, FuseFileInfo fi, int flags) {
         String path = CTypeConversion.toJavaString(pathPointer);
         // lambda not supported
         FillDir fillDir = new FillDir() {
             @Override
-            public int apply(VoidPointer buf, String name, FileStat stat, long offset) {
+            public int apply(VoidPointer buf, String name, FileStat stat, long offset, FuseFillDirFlags flags) {
                 try (var cString = CTypeConversion.toCString(name)) {
-                    return filter.invoke(buf, cString.get(), stat, offset);
+                    return filler.invoke(buf, cString.get(), stat, offset, flags != null ? flags.getValue() : FuseFillDirFlags.NONE.getValue());
                 }
             }
         };
 
-//                (bufPointer, name, stat, off) -> {
-//            try (var cString = CTypeConversion.toCString(name)) {
-//                return filter.invoke(bufPointer, cString.get(), stat, off);
-//            }
-//        };
-        return getFuseOperations().readdir(path, buf, fillDir, offset, fi);
+        return getFuseOperations().readdir(path, buf, fillDir, offset, fi, FuseReaddirFlags.fromValue(flags));
     }
 
     @CEntryPoint(name = "java_fuse_native_read")

@@ -120,7 +120,7 @@ public class FuseNative {
     static final CEntryPointLiteral<OpenFunction> open = CEntryPointLiteral.create(NativeBridger.class, "open", CCharPointer.class, FuseFileInfo.class);
     static final CEntryPointLiteral<PollFunction> poll = CEntryPointLiteral.create(NativeBridger.class, "poll", CCharPointer.class, FuseFileInfo.class, VoidPointer.class, VoidPointer.class);
     static final CEntryPointLiteral<ReadBufFunction> read_buf = CEntryPointLiteral.create(NativeBridger.class, "read_buf", CCharPointer.class, FuseBufVec.FuseBufVecPointer.class, long.class, long.class, FuseFileInfo.class);
-    static final CEntryPointLiteral<ReadDirFunction> readdir = CEntryPointLiteral.create(NativeBridger.class, "readdir", CCharPointer.class, VoidPointer.class, FillDirFunction.class, long.class, FuseFileInfo.class);
+    static final CEntryPointLiteral<ReadDirFunction> readdir = CEntryPointLiteral.create(NativeBridger.class, "readdir", CCharPointer.class, VoidPointer.class, FillDirFunction.class, long.class, FuseFileInfo.class, int.class);
     static final CEntryPointLiteral<ReadFunction> read = CEntryPointLiteral.create(NativeBridger.class, "read", CCharPointer.class, CCharPointer.class, long.class, long.class, FuseFileInfo.class);
     static final CEntryPointLiteral<ReadLinkFunction> readlink = CEntryPointLiteral.create(NativeBridger.class, "readlink", CCharPointer.class, CCharPointer.class, long.class);
     static final CEntryPointLiteral<ReleaseDirFunction> releasedir = CEntryPointLiteral.create(NativeBridger.class, "releasedir", CCharPointer.class, FuseFileInfo.class);
