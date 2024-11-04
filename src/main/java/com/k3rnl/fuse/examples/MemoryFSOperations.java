@@ -264,6 +264,11 @@ public class MemoryFSOperations extends JavaFuseOperations {
         }
         File file = (File) node;
         long newSize = Math.min(size, file.size);
+        if (newSize == file.size) {
+            return 0;
+        } else if (file.data.isEmpty()) {
+            return 0;
+        }
         int newChunkIndex = (int) (newSize / CHUNK_SIZE);
         int newChunkOffset = (int) (newSize % CHUNK_SIZE);
         file.data = file.data.subList(0, newChunkIndex + 1);
