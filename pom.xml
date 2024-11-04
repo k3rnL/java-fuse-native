@@ -52,7 +52,22 @@
                                     <mainClass>com.k3rnl.fuse.examples.MemoryFSOperations</mainClass>
                                     <imageName>memory-fs</imageName>
                                     <buildArgs>
-                                        <arg>-O0</arg>
+                                        <arg>-O3</arg>
+                                        <arg>--no-fallback</arg>
+                                    </buildArgs>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>zip-fs</id>
+                                <goals>
+                                    <goal>compile-no-fork</goal>
+                                </goals>
+                                <phase>package</phase>
+                                <configuration>
+                                    <mainClass>com.k3rnl.fuse.examples.ZipFSOperations</mainClass>
+                                    <imageName>zip-fs</imageName>
+                                    <buildArgs>
+                                        <arg>-O3</arg>
                                         <arg>--no-fallback</arg>
                                     </buildArgs>
                                 </configuration>
