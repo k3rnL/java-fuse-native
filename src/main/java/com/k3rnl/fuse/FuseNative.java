@@ -10,7 +10,6 @@ import org.graalvm.nativeimage.c.struct.SizeOf;
 import org.graalvm.nativeimage.c.type.CCharPointer;
 import org.graalvm.nativeimage.c.type.VoidPointer;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +22,19 @@ public class FuseNative {
         this.fuseOps = fuseOps;
     }
 
-    public void run(String mountingPoint, boolean debug, List<String> fuseArgs) {
+    public void mount(String mountingPoint, boolean debug) {
+        mount(mountingPoint, debug, List.of());
+    }
+
+    public void mount(String mountingPoint, List<String> fuseArgs) {
+        mount(mountingPoint, false, fuseArgs);
+    }
+
+    public void mount(String mountingPoint) {
+        mount(mountingPoint, false);
+    }
+
+    public void mount(String mountingPoint, boolean debug, List<String> fuseArgs) {
         FuseOperations nativeOps = StackValue.get(FuseOperations.class);
 
         LibC.memset(LibC.autoCast(nativeOps), 0, SizeOf.get(FuseOperations.class));
