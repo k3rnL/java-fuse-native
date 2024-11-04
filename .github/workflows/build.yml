@@ -36,7 +36,6 @@ jobs:
           mvn source:jar
 
       - name: Archive JARs
-        if: github.ref == 'refs/heads/main'
         uses: actions/upload-artifact@v3
         with:
           name: JARs
@@ -44,7 +43,6 @@ jobs:
             target/fuse-native-*.jar
 
       - name: Archive example
-        if: github.ref == 'refs/heads/main'
         uses: actions/upload-artifact@v3
         with:
           name: examples
