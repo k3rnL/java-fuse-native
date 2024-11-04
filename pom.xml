@@ -25,97 +25,44 @@
 
     <build>
         <plugins>
-            <!-- Maven Shade Plugin to create a fat/uber JAR -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.4</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <transformers>
-                                <!-- Adds the Main-Class attribute to the manifest -->
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>com.k3rnl.fuse.FuseNative</mainClass>
-                                </transformer>
-                            </transformers>
-<!--                            <filters>-->
-<!--                                &lt;!&ndash; Exclude org.graalvm.nativeimage:svm from the shaded JAR &ndash;&gt;-->
-<!--                                <filter>-->
-<!--                                    <artifact>org.graalvm.nativeimage:svm</artifact>-->
-<!--                                    <excludes>-->
-<!--                                        <exclude>**/*</exclude>-->
-<!--                                        <exclude>META-INF/**</exclude>-->
-<!--                                    </excludes>-->
-<!--                                </filter>-->
-<!--                                <filter>-->
-<!--                                    <artifact>org.graalvm.compiler:compiler</artifact>-->
-<!--                                    <excludes>-->
-<!--                                        <exclude>**/*</exclude>-->
-<!--                                        <exclude>META-INF/**</exclude>-->
-<!--                                    </excludes>-->
-<!--                                </filter>-->
-<!--                                <filter>-->
-<!--                                    <artifact>org.graalvm.nativeimage:native-image-base</artifact>-->
-<!--                                    <excludes>-->
-<!--                                        <exclude>**/*</exclude>-->
-<!--                                        <exclude>META-INF/**</exclude>-->
-<!--                                    </excludes>-->
-<!--                                </filter>-->
-<!--                                <filter>-->
-<!--                                    <artifact>org.graalvm.nativeimage:objectfile</artifact>-->
-<!--                                    <excludes>-->
-<!--                                        <exclude>**/*</exclude>-->
-<!--                                        <exclude>META-INF/**</exclude>-->
-<!--                                    </excludes>-->
-<!--                                </filter>-->
-<!--                                <filter>-->
-<!--                                    <artifact>org.graalvm.nativeimage:pointsto</artifact>-->
-<!--                                    <excludes>-->
-<!--                                        <exclude>**/*</exclude>-->
-<!--                                        <exclude>META-INF/**</exclude>-->
-<!--                                    </excludes>-->
-<!--                                </filter>-->
-<!--                                <filter>-->
-<!--                                    <artifact>org.graalvm.sdk:collections</artifact>-->
-<!--                                    <excludes>-->
-<!--                                        <exclude>**/*</exclude>-->
-<!--                                        <exclude>META-INF/**</exclude>-->
-<!--                                    </excludes>-->
-<!--                                </filter>-->
-<!--                                <filter>-->
-<!--                                    <artifact>org.graalvm.sdk:nativeimage</artifact>-->
-<!--                                    <excludes>-->
-<!--                                        <exclude>**/*</exclude>-->
-<!--                                        <exclude>META-INF/**</exclude>-->
-<!--                                    </excludes>-->
-<!--                                </filter>-->
-<!--                                <filter>-->
-<!--                                    <artifact>org.graalvm.sdk:word</artifact>-->
-<!--                                    <excludes>-->
-<!--                                        <exclude>**/*</exclude>-->
-<!--                                        <exclude>META-INF/**</exclude>-->
-<!--                                    </excludes>-->
-<!--                                </filter>-->
-<!--                                <filter>-->
-<!--                                    <artifact>org.graalvm.truffle:truffle-compiler</artifact>-->
-<!--                                    <excludes>-->
-<!--                                        <exclude>**/*</exclude>-->
-<!--                                        <exclude>META-INF/**</exclude>-->
-<!--                                    </excludes>-->
-<!--                                </filter>-->
-<!--                            </filters>-->
-                        </configuration>
-                    </execution>
-                </executions>
+                <groupId>org.graalvm.buildtools</groupId>
+                <artifactId>native-maven-plugin</artifactId>
+                <version>0.10.3</version>
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>build-examples</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.graalvm.buildtools</groupId>
+                        <artifactId>native-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>memory-fs</id>
+                                <goals>
+                                    <goal>compile-no-fork</goal>
+                                </goals>
+                                <phase>package</phase>
+                                <configuration>
+                                    <mainClass>com.k3rnl.fuse.examples.MemoryFSOperations</mainClass>
+                                    <imageName>memory-fs</imageName>
+                                    <buildArgs>
+                                        <arg>-O0</arg>
+                                        <arg>--no-fallback</arg>
+                                    </buildArgs>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 
 </project>
