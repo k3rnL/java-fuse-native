@@ -20,23 +20,17 @@ public class JavaFuseOperations {
 
     public JavaFuseOperations() {
         var methods = getClass().getDeclaredMethods();
-        System.out.println("Initializing JavaFuseOperations");
-        System.out.println("Methods: " + methods.length);
 
         for (var method : methods) {
             if (method.isAnnotationPresent(NotImplemented.class)) {
-                System.out.println("Method " + method.getName() + " is not implemented");
                 implementedMethods.put(method.getName(), false);
             } else {
-                System.out.println("Method " + method.getName() + " is implemented");
                 implementedMethods.put(method.getName(), true);
             }
         }
     }
 
     public boolean isImplemented(String methodName) {
-        System.out.println("Checking if " + methodName + " is implemented");
-        System.out.println("Implemented methods: " + implementedMethods);
         return implementedMethods.getOrDefault(methodName, false);
     }
 

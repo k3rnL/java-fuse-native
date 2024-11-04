@@ -18,8 +18,7 @@ public class FuseLibrary {
 
     public static int fuseMain(List<String> args, FuseOperations op, VoidPointer user_data) {
         try (var cargs = CTypeConversion.toCStrings(args.toArray(new String[0]))) {
-            System.out.println("FuseOperations size: " + SizeOf.get(FuseOperations.class));
-            return fuse_main_real(args.size(), cargs.get(), op, SizeOf.get(FuseOperations.class), user_data);
+           return fuse_main_real(args.size(), cargs.get(), op, SizeOf.get(FuseOperations.class), user_data);
         }
     }
 

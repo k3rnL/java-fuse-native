@@ -90,13 +90,10 @@ public class MemoryFSOperations extends JavaFuseOperations {
     @Override
     public int getattr(String path, FileStat stat, FuseFileInfo fi) {
         Node node = nodes.get(path);
-        System.out.println("getattr: " + path + " -> " + node);
         if (node == null) {
             return -Errno.ENOENT();
         }
-        System.out.println("fill stats");
         fillFileStat(node, stat);
-        System.out.println("done");
         return 0;
     }
 
@@ -186,14 +183,11 @@ public class MemoryFSOperations extends JavaFuseOperations {
 
             // Copy data from the chunk to buf
             System.arraycopy(chunk, chunkOffset, buf, bufOffset, bytesToRead);
-//            System.out.println("Read " + bytesToRead + " bytes from chunk " + chunkIndex + " at offset " + chunkOffset);
-//            System.out.println("Data: " + new String(chunk));
 
             bytesRead += bytesToRead;
             bufOffset += bytesToRead;
         }
 
-//        System.out.println("Read " + bytesRead + " bytes from file " + path);
         return bytesRead;
     }
 
@@ -212,12 +206,10 @@ public class MemoryFSOperations extends JavaFuseOperations {
             // Ensure the chunk exists in the file
             while (file.data.size() <= chunkIndex) {
                 file.data.add(new byte[CHUNK_SIZE]); // Create a new chunk if needed
-//                System.out.println("Created new chunk");
             }
 
             byte[] chunk = file.data.get(chunkIndex);
             int bytesToWrite = (int) Math.min(size - bytesWritten, CHUNK_SIZE - chunkOffset);
-//            System.out.println("Writing " + bytesToWrite + " bytes to chunk " + chunkIndex + " at offset " + chunkOffset);
 
             // Copy data from buf to the chunk
             System.arraycopy(buf, bufOffset, chunk, chunkOffset, bytesToWrite);
@@ -228,7 +220,6 @@ public class MemoryFSOperations extends JavaFuseOperations {
 
         file.size = Math.max(file.size, offset + bytesWritten);
 
-//        System.out.println("Wrote " + bytesWritten + " bytes to file " + path);
         return (int) size;
     }
 
@@ -316,10 +307,9 @@ public class MemoryFSOperations extends JavaFuseOperations {
     public int rmdir(String path) {
         String parentPath = getParentPath(path);
         Node parent = nodes.get(parentPath);
-        if (!(parent instanceof Folder)) {
+        if (!(parent instanceof Folder folder)) {
             return -Errno.ENOENT();
         }
-        Folder folder = (Folder) parent;
         Node node = nodes.get(path);
         if (node == null) {
             return -Errno.ENOENT();
