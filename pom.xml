@@ -53,6 +53,7 @@
                                     <imageName>memory-fs</imageName>
                                     <buildArgs>
                                         <arg>-O3</arg>
+                                        <arg>--gc=G1</arg>
                                         <arg>--no-fallback</arg>
                                     </buildArgs>
                                 </configuration>
