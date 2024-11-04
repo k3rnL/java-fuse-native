@@ -20,6 +20,11 @@ jobs:
           distribution: 'graalvm' # See 'Options' section below for all available distributions
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Install FUSE3
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fuse3
+
       - name: Build the project
         run: |
           mvn package -Pbuild-examples
