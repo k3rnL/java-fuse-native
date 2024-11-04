@@ -4,10 +4,13 @@ import com.k3rnl.fuse.FuseNative;
 import com.k3rnl.fuse.api.FillDir;
 import com.k3rnl.fuse.api.JavaFuseOperations;
 import com.k3rnl.fuse.fuse.FuseFileInfo;
+import com.k3rnl.fuse.fuse.FuseFillDirFlags;
 import com.k3rnl.fuse.fuse.FuseLibrary;
+import com.k3rnl.fuse.fuse.FuseReaddirFlags;
 import com.k3rnl.fuse.libc.Errno;
 import com.k3rnl.fuse.libc.FileStat;
 import com.k3rnl.fuse.libc.FileStatFlags;
+import org.graalvm.nativeimage.StackValue;
 import org.graalvm.nativeimage.c.type.VoidPointer;
 import org.graalvm.word.WordFactory;
 
@@ -142,6 +145,7 @@ public class ZipFSOperations extends JavaFuseOperations {
     }
 
     void fillStat(ZipEntry entry, FileStat stat) {
+        var context = FuseLibrary.fuse_get_context();
         if (entry.isDirectory())
             stat.st_mode(FileStatFlags.S_IFDIR | FileStatFlags.ALL_READ | FileStatFlags.S_IXUGO);
         else
@@ -151,23 +155,29 @@ public class ZipFSOperations extends JavaFuseOperations {
         stat.st_mtime(entry.getLastModifiedTime().toMillis() / 1000);
         stat.st_ctime(entry.getCreationTime().toMillis() / 1000);
         stat.st_nlink(1);
+        stat.st_uid(context.uid());
+        stat.st_gid(context.gid());
+    }
+
+    void fillStatRootDit(FileStat stat) {
+        try {
+            BasicFileAttributes attr = Files.readAttributes(Paths.get(archive).toAbsolutePath(), BasicFileAttributes.class);
+            stat.st_mode(FileStatFlags.S_IFDIR | FileStatFlags.ALL_READ | FileStatFlags.S_IXUGO);
+            stat.st_size(attr.size());
+            stat.st_atime(attr.lastAccessTime().toMillis() / 1000);
+            stat.st_mtime(attr.lastModifiedTime().toMillis() / 1000);
+            stat.st_ctime(attr.creationTime().toMillis() / 1000);
+            stat.st_nlink(1);
+        } catch (IOException ignored) {
+
+        }
     }
 
     @Override
     public int getattr(String path, FileStat stat, FuseFileInfo fi) {
         if (path.equals("/")) {
-            try {
-                BasicFileAttributes attr = Files.readAttributes(Paths.get(archive).toAbsolutePath(), BasicFileAttributes.class);
-                stat.st_mode(FileStatFlags.S_IFDIR | FileStatFlags.ALL_READ | FileStatFlags.S_IXUGO);
-                stat.st_size(attr.size());
-                stat.st_atime(attr.lastAccessTime().toMillis() / 1000);
-                stat.st_mtime(attr.lastModifiedTime().toMillis() / 1000);
-                stat.st_ctime(attr.creationTime().toMillis() / 1000);
-                stat.st_nlink(1);
-                return 0;
-            } catch (IOException e) {
-                return -Errno.ENOENT();
-            }
+            fillStatRootDit(stat);
+            return 0;
         }
         Entry entry = entries.get(path);
         if (entry == null) {
@@ -178,16 +188,33 @@ public class ZipFSOperations extends JavaFuseOperations {
     }
 
     @Override
-    public int readdir(String path, VoidPointer buf, FillDir filler, long offset, FuseFileInfo fi) {
+    public int readdir(String path, VoidPointer buf, FillDir filler, long offset, FuseFileInfo fi, FuseReaddirFlags flags) {
         if (!(entries.get(path) instanceof Folder folder))
             return -Errno.ENOTDIR();
 
-        filler.apply(buf, ".", WordFactory.nullPointer(), 0);
-        filler.apply(buf, "..", WordFactory.nullPointer(), 0);
+        if (flags == FuseReaddirFlags.FUSE_READDIR_PLUS) {
+            FileStat stat = StackValue.get(FileStat.class);
+            if (path.equals("/")) {
+                fillStatRootDit(stat);
+            } else {
+                fillStat(folder.entry, stat);
+            }
+            filler.apply(buf, ".", stat, 0, FuseFillDirFlags.FUSE_FILL_DIR_PLUS);
+            filler.apply(buf, "..", stat, 0, FuseFillDirFlags.NONE);
 
-        for (Entry entry : folder.entries) {
-            String fileName = entry.name.substring(entry.name.lastIndexOf('/') + 1);
-            filler.apply(buf, fileName, WordFactory.nullPointer(), 0);
+            for (Entry entry : folder.entries) {
+                String fileName = entry.name.substring(entry.name.lastIndexOf('/') + 1);
+                fillStat(entry.entry, stat);
+                filler.apply(buf, fileName, stat, 0, FuseFillDirFlags.FUSE_FILL_DIR_PLUS);
+            }
+        } else {
+            filler.apply(buf, ".", WordFactory.nullPointer(), 0, null);
+            filler.apply(buf, "..", WordFactory.nullPointer(), 0, null);
+
+            for (Entry entry : folder.entries) {
+                String fileName = entry.name.substring(entry.name.lastIndexOf('/') + 1);
+                filler.apply(buf, fileName, WordFactory.nullPointer(), 0, null);
+            }
         }
 
         return 0;
