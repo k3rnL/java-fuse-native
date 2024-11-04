@@ -10,22 +10,23 @@ import org.graalvm.nativeimage.c.type.VoidPointer;
 import org.graalvm.word.WordFactory;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class MemoryFSOperations extends JavaFuseOperations {
 
     public static void main(String[] args) {
+        if (args.length < 1) {
+            System.err.println("Usage: memory-fs <mountpoint> [options]");
+            System.exit(1);
+        }
+
         MemoryFSOperations memoryFSOperations = new MemoryFSOperations();
         memoryFSOperations.nodes.put("/", new Folder("/"));
 
         FuseNative fuse = new FuseNative(memoryFSOperations);
 
-        fuse.run("/tmp/test", true, List.of("-o", "fsname=MemoryFS", "-o", "allow_other"));
+        fuse.mount(args[0], Arrays.asList(args).subList(1, args.length));
     }
 
     private static final int CHUNK_SIZE = 4096 * 8; // 32KB
