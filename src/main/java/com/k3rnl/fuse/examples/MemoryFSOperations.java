@@ -3,7 +3,7 @@ package com.k3rnl.fuse.examples;
 import com.k3rnl.fuse.FuseNative;
 import com.k3rnl.fuse.api.FillDir;
 import com.k3rnl.fuse.api.JavaFuseOperations;
-import com.k3rnl.fuse.fuse.FuseFileInfo;
+import com.k3rnl.fuse.fuse.*;
 import com.k3rnl.fuse.libc.*;
 import org.graalvm.nativeimage.StackValue;
 import org.graalvm.nativeimage.c.type.VoidPointer;
@@ -22,14 +22,13 @@ public class MemoryFSOperations extends JavaFuseOperations {
         }
 
         MemoryFSOperations memoryFSOperations = new MemoryFSOperations();
-        memoryFSOperations.nodes.put("/", new Folder("/"));
 
         FuseNative fuse = new FuseNative(memoryFSOperations);
 
         fuse.mount(args[0], Arrays.asList(args).subList(1, args.length));
     }
 
-    private static final int CHUNK_SIZE = 4096 * 8; // 32KB
+    private static final int CHUNK_SIZE = 4096 * 4096; // 16MB
 
     static abstract class Node {
         final String name;
@@ -40,29 +39,31 @@ public class MemoryFSOperations extends JavaFuseOperations {
         int gid;
         int permission;
 
-        public Node(String name) {
+        public Node(String name, int uid, int gid) {
             this.name = name;
             this.atime = Instant.now();
             this.mtime = Instant.now();
-            this.uid = 1000;
-            this.gid = 1000;
             this.permission = 0755;
+            this.uid = uid;
+            this.gid = gid;
         }
     }
+
     static class Folder extends Node {
         final List<Node> children = new ArrayList<>();
 
-        public Folder(String name) {
-            super(name);
+        public Folder(String name, int uid, int gid) {
+            super(name, uid, gid);
         }
     }
+
     static class File extends Node {
         List<byte[]> data;
         long size;
 
-        public File(String name) {
-            super(name);
-            this.data = new ArrayList<>();
+        public File(String name, int uid, int gid) {
+            super(name, uid, gid);
+            this.data = new ArrayList<>(512);
             this.size = 0;
         }
     }
@@ -88,6 +89,16 @@ public class MemoryFSOperations extends JavaFuseOperations {
     }
 
     @Override
+    public VoidPointer init(VoidPointer conn, FuseConfig config) {
+        // get default uid/gid
+        int uid = FuseLibrary.fuse_get_context().uid();
+        int gid = FuseLibrary.fuse_get_context().gid();
+        nodes.put("/", new Folder("/", uid, gid));
+
+        return WordFactory.nullPointer();
+    }
+
+    @Override
     public int getattr(String path, FileStat stat, FuseFileInfo fi) {
         Node node = nodes.get(path);
         if (node == null) {
@@ -98,20 +109,29 @@ public class MemoryFSOperations extends JavaFuseOperations {
     }
 
     @Override
-    public int readdir(String path, VoidPointer buf, FillDir filler, long offset, FuseFileInfo fi) {
+    public int readdir(String path, VoidPointer buf, FillDir filler, long offset, FuseFileInfo fi, FuseReaddirFlags flags) {
         Node node = nodes.get(path);
         if (node == null) {
             return Errno.ENOENT();
         } else if (node instanceof File) {
             return Errno.ENOTDIR();
         }
-        FileStat stat = StackValue.get(FileStat.class);
         Folder folder = (Folder) node;
-        filler.apply(buf, ".", WordFactory.nullPointer(), 0);
-        filler.apply(buf, "..", WordFactory.nullPointer(), 0);
-        for (Node child : folder.children) {
-            fillFileStat(child, stat);
-            filler.apply(buf, child.name, stat, 0);
+        if (flags == FuseReaddirFlags.FUSE_READDIR_PLUS) {
+            FileStat stat = StackValue.get(FileStat.class);
+            fillFileStat(folder, stat);
+            filler.apply(buf, ".", stat, 0, FuseFillDirFlags.FUSE_FILL_DIR_PLUS);
+            filler.apply(buf, "..", stat, 0, FuseFillDirFlags.NONE);
+            for (Node child : folder.children) {
+                fillFileStat(child, stat);
+                filler.apply(buf, child.name, stat, 0, FuseFillDirFlags.FUSE_FILL_DIR_PLUS);
+            }
+        } else {
+            filler.apply(buf, ".", WordFactory.nullPointer(), 0, null);
+            filler.apply(buf, "..", WordFactory.nullPointer(), 0, null);
+            for (Node child : folder.children) {
+                filler.apply(buf, child.name, WordFactory.nullPointer(), 0, null);
+            }
         }
         return 0;
     }
@@ -124,7 +144,9 @@ public class MemoryFSOperations extends JavaFuseOperations {
         if (!(parent instanceof Folder)) {
             return -Errno.ENOENT();
         }
-        Folder folder = new Folder(parts[parts.length - 1]);
+        int uid = FuseLibrary.fuse_get_context().uid();
+        int gid = FuseLibrary.fuse_get_context().gid();
+        Folder folder = new Folder(parts[parts.length - 1], uid, gid);
         folder.permission = mode & 0777;
         nodes.put(path, folder);
         ((Folder) parent).children.add(folder);
@@ -203,6 +225,7 @@ public class MemoryFSOperations extends JavaFuseOperations {
             int chunkIndex = (int) ((offset + bytesWritten) / CHUNK_SIZE);
             int chunkOffset = (int) ((offset + bytesWritten) % CHUNK_SIZE);
 
+
             // Ensure the chunk exists in the file
             while (file.data.size() <= chunkIndex) {
                 file.data.add(new byte[CHUNK_SIZE]); // Create a new chunk if needed
@@ -238,7 +261,9 @@ public class MemoryFSOperations extends JavaFuseOperations {
         if (!(parent instanceof Folder)) {
             return -Errno.ENOENT();
         }
-        File file = new File(parts[parts.length - 1]);
+        int uid = FuseLibrary.fuse_get_context().uid();
+        int gid = FuseLibrary.fuse_get_context().gid();
+        File file = new File(parts[parts.length - 1], uid, gid);
         file.permission = mode & 0777;
         nodes.put(path, file);
         ((Folder) parent).children.add(file);
@@ -253,23 +278,36 @@ public class MemoryFSOperations extends JavaFuseOperations {
         } else if (node instanceof Folder) {
             return -Errno.EISDIR();
         }
+
         File file = (File) node;
-        long newSize = Math.min(size, file.size);
-        if (newSize == file.size) {
+
+        if (size == file.size) {
             return 0;
-        } else if (file.data.isEmpty()) {
-            return 0;
+        } else if (size < file.size) {
+            // Truncate by removing chunks as needed
+            int lastChunkIndex = (int) (size / CHUNK_SIZE);
+            int lastChunkOffset = (int) (size % CHUNK_SIZE);
+
+            // Remove chunks beyond the last chunk we need
+            file.data = file.data.subList(0, lastChunkIndex + 1);
+
+            // Zero out the remainder of the last chunk if size lands within a chunk
+            if (lastChunkIndex < file.data.size()) {
+                byte[] lastChunk = file.data.get(lastChunkIndex);
+                Arrays.fill(lastChunk, lastChunkOffset, lastChunk.length, (byte) 0);
+            }
+
+            file.size = size;
+        } else {
+            // Expand the file by adding chunks if necessary
+            while (file.size < size) {
+                // Add a new chunk
+                file.data.add(new byte[CHUNK_SIZE]);
+
+                file.size = Math.min(file.size + CHUNK_SIZE, size);
+            }
         }
-        int newChunkIndex = (int) (newSize / CHUNK_SIZE);
-        int newChunkOffset = (int) (newSize % CHUNK_SIZE);
-        file.data = file.data.subList(0, newChunkIndex + 1);
-        if (newChunkIndex < file.data.size()) {
-            byte[] lastChunk = file.data.get(newChunkIndex);
-            byte[] newLastChunk = new byte[newChunkOffset];
-            System.arraycopy(lastChunk, 0, newLastChunk, 0, newChunkOffset);
-            file.data.set(newChunkIndex, newLastChunk);
-        }
-        file.size = newSize;
+
         return 0;
     }
 
