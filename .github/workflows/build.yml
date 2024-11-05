@@ -1,8 +1,5 @@
 name: Build project
 
-permissions:
-  contents: write  # Set permissions for GitHub release access
-
 on:
   push:
     tags:
@@ -11,8 +8,6 @@ on:
 jobs:
   build-native:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
 
     steps:
       - uses: actions/checkout@v4
@@ -36,13 +31,13 @@ jobs:
           mvn source:jar
 
       - name: Archive JARs
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: JARs
           path: target/fuse-native-*.jar
 
       - name: Archive example
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: examples
           path: target/memory-fs
@@ -59,13 +54,13 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Download all JAR artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: JARs
           path: ./artifacts/JARs
 
       - name: Download example artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: examples
           path: ./artifacts/examples
@@ -76,15 +71,10 @@ jobs:
 
       - name: Create GitHub release
         id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: ncipollo/release-action@v1
         with:
-          tag_name: ${{ github.ref_name }}
-          release_name: ${{ github.ref_name }}
+          artifacts: ./artifacts/jars.zip,./artifacts/examples/*,./artifacts/JARs/*
           body: "Release for tag ${{ github.ref_name }}"
-          draft: false
-          prerelease: false
 
       # Upload individual files
       - name: Upload individual JAR files to release
