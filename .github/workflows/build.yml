@@ -40,7 +40,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: examples
-          path: target/memory-fs
+          path: |
+            target/memory-fs
+            target/zip-fs
 
   release:
     runs-on: ubuntu-latest
@@ -75,29 +77,3 @@ jobs:
         with:
           artifacts: ./artifacts/jars.zip,./artifacts/examples/*,./artifacts/JARs/*
           body: "Release for tag ${{ github.ref_name }}"
-
-      # Upload individual files
-      - name: Upload individual JAR files to release
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./artifacts/JARs/*
-          asset_name: fuse-native-jar
-          asset_content_type: application/java-archive
-
-      - name: Upload individual example files to release
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./artifacts/examples/*
-          asset_name: examples
-          asset_content_type: application/octet-stream
-
-      # Upload zip files
-      - name: Upload JAR zip to release
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./artifacts/jars.zip
-          asset_name: fuse-native-jars.zip
-          asset_content_type: application/zip
