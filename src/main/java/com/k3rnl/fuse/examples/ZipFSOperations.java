@@ -151,9 +151,12 @@ public class ZipFSOperations extends JavaFuseOperations {
         else
             stat.st_mode(FileStatFlags.S_IFREG | FileStatFlags.ALL_READ);
         stat.st_size(entry.getSize());
-        stat.st_atime(entry.getLastAccessTime().toMillis() / 1000);
-        stat.st_mtime(entry.getLastModifiedTime().toMillis() / 1000);
-        stat.st_ctime(entry.getCreationTime().toMillis() / 1000);
+        stat.st_atime().tv_sec(entry.getLastAccessTime().toMillis() / 1000);
+        stat.st_atime().tv_nsec(entry.getLastAccessTime().toInstant().getNano());
+        stat.st_mtime().tv_sec(entry.getLastModifiedTime().toMillis() / 1000);
+        stat.st_mtime().tv_nsec(entry.getLastModifiedTime().toInstant().getNano());
+        stat.st_ctime().tv_sec(entry.getCreationTime().toMillis() / 1000);
+        stat.st_ctime().tv_nsec(entry.getCreationTime().toInstant().getNano());
         stat.st_nlink(1);
         stat.st_uid(context.uid());
         stat.st_gid(context.gid());
@@ -164,9 +167,12 @@ public class ZipFSOperations extends JavaFuseOperations {
             BasicFileAttributes attr = Files.readAttributes(Paths.get(archive).toAbsolutePath(), BasicFileAttributes.class);
             stat.st_mode(FileStatFlags.S_IFDIR | FileStatFlags.ALL_READ | FileStatFlags.S_IXUGO);
             stat.st_size(attr.size());
-            stat.st_atime(attr.lastAccessTime().toMillis() / 1000);
-            stat.st_mtime(attr.lastModifiedTime().toMillis() / 1000);
-            stat.st_ctime(attr.creationTime().toMillis() / 1000);
+            stat.st_atime().tv_sec(attr.lastAccessTime().toMillis() / 1000);
+            stat.st_atime().tv_nsec(attr.lastAccessTime().toInstant().getNano());
+            stat.st_mtime().tv_sec(attr.lastModifiedTime().toMillis() / 1000);
+            stat.st_mtime().tv_nsec(attr.lastModifiedTime().toInstant().getNano());
+            stat.st_ctime().tv_sec(attr.creationTime().toMillis() / 1000);
+            stat.st_ctime().tv_nsec(attr.creationTime().toInstant().getNano());
             stat.st_nlink(1);
         } catch (IOException ignored) {
 

@@ -74,8 +74,10 @@ public class MemoryFSOperations extends JavaFuseOperations {
     private final AtomicLong nextFileHandle = new AtomicLong(0);
 
     private void fillFileStat(Node node, FileStat stat) {
-        stat.st_atime(node.atime.getEpochSecond());
-        stat.st_mtime(node.mtime.getEpochSecond());
+        stat.st_atime().tv_sec(node.atime.getEpochSecond());
+        stat.st_atime().tv_nsec(node.atime.getNano());
+        stat.st_mtime().tv_sec(node.mtime.getEpochSecond());
+        stat.st_mtime().tv_nsec(node.mtime.getNano());
         stat.st_uid(node.uid);
         stat.st_gid(node.gid);
         if (node instanceof File file) {

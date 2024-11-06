@@ -2,6 +2,7 @@ package com.k3rnl.fuse.libc;
 
 import org.graalvm.nativeimage.c.CContext;
 import org.graalvm.nativeimage.c.struct.CField;
+import org.graalvm.nativeimage.c.struct.CFieldAddress;
 import org.graalvm.nativeimage.c.struct.CStruct;
 import org.graalvm.word.PointerBase;
 
@@ -70,21 +71,21 @@ public interface FileStat extends PointerBase {
     @CField("st_blocks")
     void st_blocks(long value);
 
-    @CField("st_atime")
-    long st_atime();   // Time of last access
+    @CFieldAddress("st_atime")
+    TimeSpec st_atime();   // Time of last access
 
-    @CField("st_atime")
-    void st_atime(long value);
+//    @CField("st_atime")
+//    void st_atime(long value);
 
-    @CField("st_mtime")
-    long st_mtime();   // Time of last modification
+    @CFieldAddress("st_mtime")
+    TimeSpec st_mtime();   // Time of last modification
 
-    @CField("st_mtime")
-    void st_mtime(long value);
+//    @CField("st_mtime")
+//    void st_mtime(long value);
 
-    @CField("st_ctime")
-    long st_ctime();   // Time of last status change
+    @CFieldAddress("st_ctime")
+    TimeSpec st_ctime();   // Time of last status change
 
-    @CField("st_ctime")
-    void st_ctime(long value);
+//    @CField("st_ctime")
+//    void st_ctime(long value);
 }
