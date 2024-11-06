@@ -1,3 +1,5 @@
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.k3rnl.fuse/fuse-native/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.k3rnl.fuse/fuse-native)
+
 # Java FUSE Native
 
 This project is a Java library that provides a FUSE (Filesystem in Userspace) integration using GraalVM native images.
@@ -22,9 +24,14 @@ Users can implement various filesystem operations by extending the provided clas
 I've never tried to compile on Windows or MacOS, so I can't guarantee that it will work. If you have any issues, please let me know.
 
 ## Getting Started
-Download the latest release from the releases page, and include it in your project.
-For now it's not available in Maven Central, so you have to download the jar from the releases page.
-
+Add the dependency to your project:
+```xml
+<dependency>
+    <groupId>com.k3rnl.fuse</groupId>
+    <artifactId>fuse-native</artifactId>
+    <version>1.0.2</version>
+</dependency>
+```
 There is no additional configuration required to use the library.
 
 ## Usage
