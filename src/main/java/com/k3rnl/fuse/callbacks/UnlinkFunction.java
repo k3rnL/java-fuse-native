@@ -4,6 +4,9 @@ import org.graalvm.nativeimage.c.function.CFunctionPointer;
 import org.graalvm.nativeimage.c.function.InvokeCFunctionPointer;
 import org.graalvm.nativeimage.c.type.CCharPointer;
 
+/**
+ * Callback for unlink
+ */
 public interface UnlinkFunction extends CFunctionPointer {
     @InvokeCFunctionPointer
     int invoke(CCharPointer path);

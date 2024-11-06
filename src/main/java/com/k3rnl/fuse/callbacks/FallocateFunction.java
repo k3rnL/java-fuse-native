@@ -5,6 +5,9 @@ import org.graalvm.nativeimage.c.function.CFunctionPointer;
 import org.graalvm.nativeimage.c.function.InvokeCFunctionPointer;
 import org.graalvm.nativeimage.c.type.CCharPointer;
 
+/**
+ * Callback for fallocate
+ */
 public interface FallocateFunction extends CFunctionPointer {
     @InvokeCFunctionPointer
     int invoke(CCharPointer path, int mode, long offset, long length, FuseFileInfo fi);

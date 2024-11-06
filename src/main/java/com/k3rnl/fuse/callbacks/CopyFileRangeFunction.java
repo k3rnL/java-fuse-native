@@ -5,6 +5,9 @@ import org.graalvm.nativeimage.c.function.CFunctionPointer;
 import org.graalvm.nativeimage.c.function.InvokeCFunctionPointer;
 import org.graalvm.nativeimage.c.type.CCharPointer;
 
+/**
+ * Callback for copy_file_range
+ */
 public interface CopyFileRangeFunction extends CFunctionPointer {
     @InvokeCFunctionPointer
     long invoke(CCharPointer pathIn, FuseFileInfo fiIn, long offIn,

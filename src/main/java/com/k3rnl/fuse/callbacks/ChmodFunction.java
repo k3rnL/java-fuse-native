@@ -5,6 +5,9 @@ import org.graalvm.nativeimage.c.function.CFunctionPointer;
 import org.graalvm.nativeimage.c.function.InvokeCFunctionPointer;
 import org.graalvm.nativeimage.c.type.CCharPointer;
 
+/**
+ * Callback for chmod
+ */
 public interface ChmodFunction extends CFunctionPointer {
     @InvokeCFunctionPointer
     int invoke(CCharPointer path, long mode, FuseFileInfo fi);

@@ -7,6 +7,9 @@ import org.graalvm.nativeimage.c.type.CCharPointer;
 import org.graalvm.nativeimage.c.type.VoidPointer;
 import org.graalvm.word.UnsignedWord;
 
+/**
+ * Callback for ioctl
+ */
 public interface IoctlFunction extends CFunctionPointer {
     @InvokeCFunctionPointer
     int invoke(CCharPointer path, int cmd, VoidPointer arg, FuseFileInfo fi, int flags, VoidPointer data);

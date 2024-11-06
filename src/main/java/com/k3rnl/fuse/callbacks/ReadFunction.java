@@ -5,6 +5,9 @@ import org.graalvm.nativeimage.c.function.CFunctionPointer;
 import org.graalvm.nativeimage.c.function.InvokeCFunctionPointer;
 import org.graalvm.nativeimage.c.type.CCharPointer;
 
+/**
+ * Callback for read
+ */
 public interface ReadFunction extends CFunctionPointer {
     @InvokeCFunctionPointer
     int invoke(CCharPointer path, CCharPointer buf, long size, long offset, FuseFileInfo fi);

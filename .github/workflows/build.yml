@@ -1,4 +1,4 @@
-name: Build project
+name: Build and Release
 
 on:
   push:
@@ -77,3 +77,49 @@ jobs:
         with:
           artifacts: ./artifacts/jars.zip,./artifacts/examples/*,./artifacts/JARs/*
           body: "Release for tag ${{ github.ref_name }}"
+
+  deploy-to-maven-central:
+    runs-on: ubuntu-latest
+    needs: build-native
+    if: startsWith(github.ref, 'refs/tags/')
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '21'
+          distribution: 'graalvm'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Import GPG key
+        uses: crazy-max/ghaction-import-gpg@v6
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.GPG_PASSPHRASE }}
+
+      - name: Set up Maven settings
+        uses: whelk-io/maven-settings-xml-action@v22
+        with:
+          servers: >
+            [
+              {
+                "id": "central",
+                "username": "${{ secrets.OSSRH_USERNAME }}",
+                "password": "${{ secrets.OSSRH_PASSWORD }}"
+              }
+            ]
+          profiles: >
+            [
+              {
+                "id": "ossrh",
+                "properties": {
+                    "gpg.passphrase": "${{ secrets.GPG_PASSPHRASE }}"
+                }
+              }
+            ]
+
+      - name: Deploy to Sonatype OSSRH
+        run: |
+          mvn clean deploy -P release,ossrh -DskipTests=true
+

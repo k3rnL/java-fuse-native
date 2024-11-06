@@ -6,6 +6,9 @@ import org.graalvm.nativeimage.c.function.CFunctionPointer;
 import org.graalvm.nativeimage.c.function.InvokeCFunctionPointer;
 import org.graalvm.nativeimage.c.type.CCharPointer;
 
+/**
+ * Callback for utimens
+ */
 public interface UtimensFunction extends CFunctionPointer {
     @InvokeCFunctionPointer
     int invoke(CCharPointer path, TimeSpec[] timespec, FuseFileInfo fi);

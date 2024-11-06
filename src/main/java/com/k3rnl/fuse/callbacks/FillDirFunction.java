@@ -7,6 +7,9 @@ import org.graalvm.nativeimage.c.function.InvokeCFunctionPointer;
 import org.graalvm.nativeimage.c.type.CCharPointer;
 import org.graalvm.nativeimage.c.type.VoidPointer;
 
+/**
+ * Callback for fillDir
+ */
 public interface FillDirFunction extends CFunctionPointer {
     @InvokeCFunctionPointer
     int invoke(VoidPointer buf, CCharPointer name, FileStat stat, long off, int fillDirPlus);
