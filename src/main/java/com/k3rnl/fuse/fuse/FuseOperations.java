@@ -221,7 +221,73 @@ public interface FuseOperations extends PointerBase {
     @CField("init")
     void init(InitFunction func);
 
-    // New fields based on additional CEntryPointLiterals
+    /**
+     * Sets the callback function for the {@code setxattr} operation.
+     *
+     * @param func the {@link SetXAttrFunction} to handle {@code setxattr} requests.
+     */
+    @CField("setxattr")
+    void setxattr(SetXAttrFunction func);
+
+    /**
+     * Retrieves the callback function for the {@code setxattr} operation,
+     * which is used to set an extended attribute.
+     *
+     * @return the {@link SetXAttrFunction} callback.
+     */
+    @CField("setxattr")
+    SetXAttrFunction setxattr();
+
+    /**
+     * Retrieves the callback function for the {@code getxattr} operation,
+     * which is used to get an extended attribute.
+     *
+     * @return the {@link GetXAttrFunction} callback.
+     */
+    @CField("getxattr")
+    GetXAttrFunction getxattr();
+
+    /**
+     * Sets the callback function for the {@code getxattr} operation.
+     *
+     * @param func the {@link GetXAttrFunction} to handle {@code getxattr} requests.
+     */
+    @CField("getxattr")
+    void getxattr(GetXAttrFunction func);
+
+    /**
+     * Retrieves the callback function for the {@code listxattr} operation,
+     * which is used to list extended attributes.
+     *
+     * @return the {@link ListXAttrFunction} callback.
+     */
+    @CField("listxattr")
+    ListXAttrFunction listxattr();
+
+    /**
+     * Sets the callback function for the {@code listxattr} operation.
+     *
+     * @param func the {@link ListXAttrFunction} to handle {@code listxattr} requests.
+     */
+    @CField("listxattr")
+    void listxattr(ListXAttrFunction func);
+
+    /**
+     * Retrieves the callback function for the {@code removexattr} operation,
+     * which is used to remove an extended attribute.
+     *
+     * @return the {@link RemoveXAttrFunction} callback.
+     */
+    @CField("removexattr")
+    RemoveXAttrFunction removexattr();
+
+    /**
+     * Sets the callback function for the {@code removexattr} operation.
+     *
+     * @param func the {@link RemoveXAttrFunction} to handle {@code removexattr} requests.
+     */
+    @CField("removexattr")
+    void removexattr(RemoveXAttrFunction func);
 
     /**
      * Retrieves the callback function for the {@code access} operation,

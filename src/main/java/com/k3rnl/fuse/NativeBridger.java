@@ -267,6 +267,63 @@ public class NativeBridger {
         return getFuseOperations().release(path, fi);
     }
 
+    @CEntryPoint(name = "java_fuse_native_fsync")
+    @CEntryPointOptions(prologue = AgentIsolate.FuseContextPrologue.class,
+            epilogue = AgentIsolate.DetachEpilogue.class)
+    public static int fsync(CCharPointer pathPointer, int isdatasync, FuseFileInfo fi) {
+        String path = CTypeConversion.toJavaString(pathPointer);
+        return getFuseOperations().fsync(path, isdatasync, fi);
+    }
+
+    @CEntryPoint(name = "java_fuse_native_setxattr")
+    @CEntryPointOptions(prologue = AgentIsolate.FuseContextPrologue.class,
+            epilogue = AgentIsolate.DetachEpilogue.class)
+    public static int setxattr(CCharPointer pathPointer, CCharPointer namePointer, CCharPointer valuePointer, long size, int flags) {
+        String path = CTypeConversion.toJavaString(pathPointer);
+        String name = CTypeConversion.toJavaString(namePointer);
+        byte[] value = new byte[(int) size];
+        for (int i = 0; i < size; i++) {
+            value[i] = valuePointer.read(i);
+        }
+        return getFuseOperations().setxattr(path, name, value, size, flags);
+    }
+
+    @CEntryPoint(name = "java_fuse_native_getxattr")
+    @CEntryPointOptions(prologue = AgentIsolate.FuseContextPrologue.class,
+            epilogue = AgentIsolate.DetachEpilogue.class)
+    public static long getxattr(CCharPointer pathPointer, CCharPointer namePointer, CCharPointer valuePointer, long size) {
+        String path = CTypeConversion.toJavaString(pathPointer);
+        String name = CTypeConversion.toJavaString(namePointer);
+        byte[] value = new byte[(int) size];
+        long code = getFuseOperations().getxattr(path, name, value, size);
+        for (int i = 0; i < size; i++) {
+            valuePointer.write(i, value[i]);
+        }
+        return code;
+    }
+
+    @CEntryPoint(name = "java_fuse_native_listxattr")
+    @CEntryPointOptions(prologue = AgentIsolate.FuseContextPrologue.class,
+            epilogue = AgentIsolate.DetachEpilogue.class)
+    public static long listxattr(CCharPointer pathPointer, CCharPointer listPointer, long size) {
+        String path = CTypeConversion.toJavaString(pathPointer);
+        byte[] list = new byte[(int) size];
+        long code = getFuseOperations().listxattr(path, list, size);
+        for (int i = 0; i < size; i++) {
+            listPointer.write(i, list[i]);
+        }
+        return code;
+    }
+
+    @CEntryPoint(name = "java_fuse_native_removexattr")
+    @CEntryPointOptions(prologue = AgentIsolate.FuseContextPrologue.class,
+            epilogue = AgentIsolate.DetachEpilogue.class)
+    public static int removexattr(CCharPointer pathPointer, CCharPointer namePointer) {
+        String path = CTypeConversion.toJavaString(pathPointer);
+        String name = CTypeConversion.toJavaString(namePointer);
+        return getFuseOperations().removexattr(path, name);
+    }
+
     @CEntryPoint(name = "java_fuse_native_rename")
     @CEntryPointOptions(prologue = AgentIsolate.FuseContextPrologue.class,
             epilogue = AgentIsolate.DetachEpilogue.class)

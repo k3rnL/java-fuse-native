@@ -51,6 +51,10 @@ public class FuseNative {
         if (fuseOps.isImplemented("flush")) nativeOps.flush(flush.getFunctionPointer());
         if (fuseOps.isImplemented("getattr")) nativeOps.getattr(getattr.getFunctionPointer());
         if (fuseOps.isImplemented("init")) nativeOps.init(init.getFunctionPointer());
+        if (fuseOps.isImplemented("setxattr")) nativeOps.setxattr(setxattr.getFunctionPointer());
+        if (fuseOps.isImplemented("getxattr")) nativeOps.getxattr(getxattr.getFunctionPointer());
+        if (fuseOps.isImplemented("listxattr")) nativeOps.listxattr(listxattr.getFunctionPointer());
+        if (fuseOps.isImplemented("removexattr")) nativeOps.removexattr(removexattr.getFunctionPointer());
         if (fuseOps.isImplemented("ioctl")) nativeOps.ioctl(ioctl.getFunctionPointer());
         if (fuseOps.isImplemented("link")) nativeOps.link(link.getFunctionPointer());
         if (fuseOps.isImplemented("lock")) nativeOps.lock(lock.getFunctionPointer());
@@ -109,7 +113,10 @@ public class FuseNative {
     static final CEntryPointLiteral<FlushFunction> flush = CEntryPointLiteral.create(NativeBridger.class, "flush", CCharPointer.class, FuseFileInfo.class);
     static final CEntryPointLiteral<GetAttrFunction> getattr = CEntryPointLiteral.create(NativeBridger.class, "getattr", CCharPointer.class, FileStat.class, FuseFileInfo.class);
     static final CEntryPointLiteral<InitFunction> init = CEntryPointLiteral.create(NativeBridger.class, "init", VoidPointer.class, FuseConfig.class);
-    // xattr ops not implemented
+    static final CEntryPointLiteral<SetXAttrFunction> setxattr = CEntryPointLiteral.create(NativeBridger.class, "setxattr", CCharPointer.class, CCharPointer.class, CCharPointer.class, long.class, int.class);
+    static final CEntryPointLiteral<GetXAttrFunction> getxattr = CEntryPointLiteral.create(NativeBridger.class, "getxattr", CCharPointer.class, CCharPointer.class, CCharPointer.class, long.class);
+    static final CEntryPointLiteral<ListXAttrFunction> listxattr = CEntryPointLiteral.create(NativeBridger.class, "listxattr", CCharPointer.class, CCharPointer.class, long.class);
+    static final CEntryPointLiteral<RemoveXAttrFunction> removexattr = CEntryPointLiteral.create(NativeBridger.class, "removexattr", CCharPointer.class, CCharPointer.class);
     static final CEntryPointLiteral<IoctlFunction> ioctl = CEntryPointLiteral.create(NativeBridger.class, "ioctl", CCharPointer.class, int.class, VoidPointer.class, FuseFileInfo.class, int.class, VoidPointer.class);
     static final CEntryPointLiteral<LinkFunction> link = CEntryPointLiteral.create(NativeBridger.class, "link", CCharPointer.class, CCharPointer.class);
     static final CEntryPointLiteral<LockFunction> lock = CEntryPointLiteral.create(NativeBridger.class, "lock", CCharPointer.class, FuseFileInfo.class, int.class, Flock.class);

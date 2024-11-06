@@ -29,7 +29,7 @@ Add the dependency to your project:
 <dependency>
     <groupId>com.k3rnl.fuse</groupId>
     <artifactId>fuse-native</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
 </dependency>
 ```
 There is no additional configuration required to use the library.

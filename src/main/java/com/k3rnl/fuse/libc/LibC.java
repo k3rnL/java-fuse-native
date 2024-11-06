@@ -22,7 +22,7 @@ public class LibC {
         @Override
         public List<String> getHeaderFiles() {
             return List.of(
-                    "<string.h>", "<fcntl.h>", "<sys/stat.h>", "<sys/statvfs.h>"
+                    "<string.h>", "<fcntl.h>", "<sys/stat.h>", "<sys/statvfs.h>", "<sys/xattr.h>"
             );
         }
     }
