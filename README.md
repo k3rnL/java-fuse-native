@@ -1,4 +1,4 @@
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.k3rnl.fuse/fuse-native/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.k3rnl.fuse/fuse-native)
+[![Maven Central](https://img.shields.io/maven-central/v/com.k3rnl.fuse/fuse-native.svg?label=Maven%20Central)](https://maven-badges.herokuapp.com/maven-central/com.k3rnl.fuse/fuse-native)
 
 # Java FUSE Native
 
